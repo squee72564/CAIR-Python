@@ -1,0 +1,121 @@
+"""
+Used to find the lowest energy seam in an image.
+
+Energy value of the seam is determined and seam is reconstructed
+from the top to bottom of the image.
+"""
+
+import sys
+
+from energy import compute_energy
+from utils import Color, read_image_into_array, write_array_into_image
+
+
+class SeamEnergyWithBackPointer:
+    """
+    Represents the total energy of a seam along with a back pointer:
+
+      - Stores the total energy of a seam that ends at some position in the
+        image. The position is not stored because it can be inferred from where
+        in a 2D grid this object appears.
+
+      - Also stores the x-coordinate for the pixel in the previous row that led
+        to this particular seam energy. This is the back pointer from which the
+        entire seam can be reconstructed.
+    """
+
+    def __init__(self, energy, x_coordinate_in_previous_row=None):
+        self.energy = energy
+        self.x_coordinate_in_previous_row = x_coordinate_in_previous_row
+
+def compute_vertical_seam_v2(energy_data):
+    """
+    Find the lowest-energy vertical seam given the energy of each pixel in the
+    input image.
+
+    Lowest energy value of any seam is found, and back pointers are used to
+    reconstruct this seam.
+
+    Returns a list of  x-coordinates for the seam.
+    """
+
+    m_grid = [[None for _ in row] for row in energy_data]
+
+    h = len(energy_data)
+    w = len(energy_data[0])
+
+    for x in range(w):
+        m_grid[0][x] = SeamEnergyWithBackPointer(energy_data[0][x])
+
+    for y in range (1, h):
+        for x in range(w):
+            x_min = x-1 if x > 0 else 0
+            x_max = x+1 if x < w - 1 else w - 1
+
+            min_x_parent = min(
+                range(x_min, x_max + 1),
+                key=lambda x_candidate: m_grid[y-1][x_candidate].energy
+            )
+
+            m_grid[y][x] = SeamEnergyWithBackPointer(
+                energy_data[y][x] + m_grid[y-1][min_x_parent].energy,
+                min_x_parent
+            )
+
+    min_end_x = min(enumerate(m_grid[h - 1]), key=lambda m: m[1].energy)[0]
+    seam_energy = m_grid[-1][min_end_x].energy
+
+    seam_xs = []
+    last_x = min_end_x
+    for y in range(h - 1, -1, -1):
+        seam_xs.append(last_x)
+        last_x =m_grid[y][last_x].x_coordinate_in_previous_row
+
+    seam_xs.reverse()
+
+    return (seam_xs, seam_energy)
+
+def visualize_seam_on_image(pixels, seam_xs):
+    """
+    Draws a red line on the image along the given seam. This is done to
+    visualize where the seam is.
+    """
+
+    h = len(pixels)
+    w = len(pixels[0])
+
+    new_pixels = [[p for p in row] for row in pixels]
+
+    for y, seam_x in enumerate(seam_xs):
+        min_x = max(seam_x - 2, 0)
+        max_x = min(seam_x + 2, w - 1)
+
+        for x in range(min_x, max_x + 1):
+            new_pixels[y][x] = Color(255, 0, 0)
+
+    return new_pixels
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print(f'USAGE: {__file__} <input> <output>')
+        sys.exit(1)
+
+    input_filename = sys.argv[1]
+    output_filename = sys.argv[2]
+
+    print(f'Reading {input_filename}...')
+    pixels = read_image_into_array(input_filename)
+
+    print('Computing the energy...')
+    energy_data = compute_energy(pixels)
+
+    print('Finding the lowest-energy seam...')
+    seam_xs, min_seam_energy = compute_vertical_seam_v2(energy_data)
+
+    print(f'Saving {output_filename}')
+    visualized_pixels = visualize_seam_on_image(pixels, seam_xs)
+    write_array_into_image(visualized_pixels, output_filename)
+
+    print()
+    print(f'Minimum seam energy was {min_seam_energy} at x = {seam_xs[-1]}')
