@@ -12,7 +12,8 @@ You can use the scripts in the `src` folder to create the images below.
 
 `python seam.py <input_file> <output_file>` will give you the lowest energy seam in the image.
 
-`python carve.py <input_file> <num_iterations> <output_file>`
+`python carve.py <input_file> <num_iterations> <output_file>` will remove `<num_iterations>` lowest horizontal
+seams from the image. 
 
 
 Original picture:
@@ -32,5 +33,5 @@ Example of lowest energy seam visualized:
 
 End result of 200 lowest energy seams removed:
 <p align="center">
-	<img src="/img/surfer_200_resized.jpg">
+	<img src="/img/surfer_200_resized.png">
 </p>
