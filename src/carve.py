@@ -7,7 +7,7 @@ iteration.
 import sys
 
 from energy import compute_energy
-from seam_v2 import compute_vertical_seam_v2, visualize_seam_on_image
+from seam import compute_vertical_seam, visualize_seam_on_image
 from utils import Color, read_image_into_array, write_array_into_image
 
 
@@ -35,7 +35,7 @@ def remove_n_lowest_seams_from_image(image, num_seams_to_remove):
         print('Computing energy...')
         energy_data = compute_energy(image)
         print('Finding the lowest-energy seam...')
-        seam_xs, min_seam_energy = compute_vertical_seam_v2(energy_data)
+        seam_xs, min_seam_energy = compute_vertical_seam(energy_data)
         print('Removing lowest energy seam from image...')
         image = remove_seam_from_image(image, seam_xs) 
 

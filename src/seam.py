@@ -28,7 +28,7 @@ class SeamEnergyWithBackPointer:
         self.energy = energy
         self.x_coordinate_in_previous_row = x_coordinate_in_previous_row
 
-def compute_vertical_seam_v2(energy_data):
+def compute_vertical_seam(energy_data):
     """
     Find the lowest-energy vertical seam given the energy of each pixel in the
     input image.
@@ -111,7 +111,7 @@ if __name__ == '__main__':
     energy_data = compute_energy(pixels)
 
     print('Finding the lowest-energy seam...')
-    seam_xs, min_seam_energy = compute_vertical_seam_v2(energy_data)
+    seam_xs, min_seam_energy = compute_vertical_seam(energy_data)
 
     print(f'Saving {output_filename}')
     visualized_pixels = visualize_seam_on_image(pixels, seam_xs)
