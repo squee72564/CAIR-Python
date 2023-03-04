@@ -14,7 +14,7 @@ from utils import Color, read_image_into_array, write_array_into_image
 def remove_seam_from_image(image, seam_xs):
     """
     Removes the seam from the given image. X-coordiantes are specified from
-    top to bottom and span the image horizontally.
+    top to bottom and span the image vertically.
     """
     
     m_grid = [ [p for x, p in enumerate(row) if x != seam_xs[y]] for (y, row) in enumerate(image)]
