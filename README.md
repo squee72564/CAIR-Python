@@ -8,7 +8,7 @@ Das, Avik (2020). _Fundamentals of Dynamic Programming_ [Video]. LinkedIn.
 
 You can use the scripts in the `src` folder to create the images below.
 
-`python energy.pi <input_file> <output_file>` will give you the heatmap of the image.
+`python energy.py <input_file> <output_file>` will give you the heatmap of the image.
 
 `python seam.py <input_file> <output_file>` will give you the lowest energy seam in the image.
 
